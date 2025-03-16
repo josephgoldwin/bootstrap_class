@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rock Paper Scissors - 3 Player</title>
+  <style>
+    /* New modern design */
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f0f0;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+    }
+    h1 {
+      color: #333;
+    }
+    .game-container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .timer {
+      font-size: 24px;
+      margin: 20px;
+      color: #d9534f;
+    }
+    .players {
+      display: flex;
+      justify-content: space-around;
+      margin-bottom: 20px;
+    }
+    .player {
+      background: #e9ecef;
+      border-radius: 8px;
+      padding: 15px;
+      width: 28%;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .player h2 {
+      margin-top: 0;
+    }
+    .photo {
+      width: 100px;
+      height: 100px;
+      border: 2px solid #333;
+      border-radius: 50%;
+      background-size: cover;
+      background-position: center;
+      margin: 0 auto 10px;
+      cursor: pointer;
+    }
+    /* Specific default background images for each player */
+    #player1 .photo {
+      background-image: url('https://source.unsplash.com/random/100x200?player1');
+    }
+    #player2 .photo {
+      background-image: url('https://source.unsplash.com/random/100x200?player2');
+    }
+    #player3 .photo {
+      background-image: url('https://source.unsplash.com/random/100x200?player3');
+    }
+    .scoreboard {
+      background: #fff;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 20px auto;
+      width: 300px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .scoreboard h2 {
+      margin-top: 0;
+      color: #007bff;
+    }
+    .score-entry {
+      cursor: pointer;
+      margin: 10px;
+      padding: 5px;
+      border: 1px solid #ccc;
+    }
+    .winner-display {
+      margin: 20px;
+      padding: 15px;
+      background: #dff0d8;
+      border-radius: 8px;
+      display: none;
+    }
+    .winner-display h2 {
+      margin: 0 0 10px;
+      color: green;
+    }
+    .player img {
+      width: 80px;
+      cursor: pointer;
+      margin: 0 5px;
+      border: 2px solid #333;
+      border-radius: 5px;
+    }
+    .upload-btn {
+      margin-bottom: 10px;
+      padding: 5px 10px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Rock Paper Scissors - 3 Player</h1>
+  <div class="game-container">
+    <div class="timer">Time Left: <span id="timer">15</span> sec</div>
+    <div class="players">
+      <!-- Player 1 -->
+      <div class="player" id="player1">
+        <h2>Player 1</h2>
+        <div class="photo" title="Click to change name"></div>
+        <!-- Upload button and hidden file input -->
+        <button class="upload-btn" onclick="triggerUpload(1)">Upload Photo</button>
+        <input type="file" id="upload1" accept="image/*" style="display:none" onchange="handlePhotoUpload(event, 1)">
+        <div>
+          <img src="rock.gif" alt="rock" onclick="play(1, 'rock')">
+          <img src="paper.gif" alt="paper" onclick="play(1, 'paper')">
+          <img src="scissors.gif" alt="scissors" onclick="play(1, 'scissors')">
+        </div>
+        <p>Choice: <span id="choice1">?</span></p>
+      </div>
+      <!-- Player 2 -->
+      <div class="player" id="player2">
+        <h2>Player 2</h2>
+        <div class="photo" title="Click to change name"></div>
+        <button class="upload-btn" onclick="triggerUpload(2)">Upload Photo</button>
+        <input type="file" id="upload2" accept="image/*" style="display:none" onchange="handlePhotoUpload(event, 2)">
+        <div>
+          <img src="rock.gif" alt="rock" onclick="play(2, 'rock')">
+          <img src="paper.gif" alt="paper" onclick="play(2, 'paper')">
+          <img src="scissors.gif" alt="scissors" onclick="play(2, 'scissors')">
+        </div>
+        <p>Choice: <span id="choice2">?</span></p>
+      </div>
+      <!-- Player 3 -->
+      <div class="player" id="player3">
+        <h2>Player 3</h2>
+        <div class="photo" title="Click to change name"></div>
+        <button class="upload-btn" onclick="triggerUpload(3)">Upload Photo</button>
+        <input type="file" id="upload3" accept="image/*" style="display:none" onchange="handlePhotoUpload(event, 3)">
+        <div>
+          <img src="rock.gif" alt="rock" onclick="play(3, 'rock')">
+          <img src="paper.gif" alt="paper" onclick="play(3, 'paper')">
+          <img src="scissors.gif" alt="scissors" onclick="play(3, 'scissors')">
+        </div>
+        <p>Choice: <span id="choice3">?</span></p>
+      </div>
+    </div>
+    <!-- Rounds run automatically; no "Check Winner" button -->
+    <div class="scoreboard">
+        
+      <h2>Scoreboard</h2>
+      <div class="score-entry" id="scoreEntry1">Player 1: <span id="score1">0</span></div>
+      <div class="score-entry" id="scoreEntry2">Player 2: <span id="score2">0</span></div>
+      <div class="score-entry" id="scoreEntry3">Player 3: <span id="score3">0</span></div>
+      <p>(Click on a score to manually increase it)</p>
+    </div>
+    <div class="winner-display" id="winnerDisplay">
+      <h2 id="winnerText"></h2>
+      <div id="winnerImageContainer"></div>
+    </div>
+  </div>
+
+  <script>
+    let choices = {};
+    let scores = {1: 0, 2: 0, 3: 0};
+    let timerDuration = 15; // seconds per round
+    let timeLeft = timerDuration;
+    let timerInterval;
+
+    // Start or restart the countdown timer
+    function startTimer() {
+      timeLeft = timerDuration;
+      document.getElementById('timer').innerText = timeLeft;
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        document.getElementById('timer').innerText = timeLeft;
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          autoSelectChoices();
+          determineWinner();
+        }
+      }, 1000);
+    }
+
+    // Reset round choices and winner display
+    function resetRound() {
+      choices = {};
+      document.getElementById("choice1").innerText = "?";
+      document.getElementById("choice2").innerText = "?";
+      document.getElementById("choice3").innerText = "?";
+      document.getElementById('winnerDisplay').style.display = 'none';
+      startTimer();
+    }
+
+    // Auto-select a random choice for players who haven’t chosen
+    function autoSelectChoices() {
+      const options = ['rock', 'paper', 'scissors'];
+      for (let player = 1; player <= 3; player++) {
+        if (!choices[player]) {
+          let randomChoice = options[Math.floor(Math.random() * options.length)];
+          choices[player] = randomChoice;
+          document.getElementById(`choice${player}`).innerText = randomChoice;
+        }
+      }
+    }
+
+    // When a player clicks a move image
+    function play(player, choice) {
+      choices[player] = choice;
+      document.getElementById(`choice${player}`).innerText = choice;
+    }
+
+    // Determine the winner based on choices and update scores automatically
+    function determineWinner() {
+      clearInterval(timerInterval);
+      if (Object.keys(choices).length < 3) {
+        autoSelectChoices();
+      }
+      
+      let choicesArray = Object.values(choices);
+      let results = {
+        rock: choicesArray.filter(c => c === 'rock').length,
+        paper: choicesArray.filter(c => c === 'paper').length,
+        scissors: choicesArray.filter(c => c === 'scissors').length
+      };
+      
+      let winner = null;
+      if (results.rock === 1 && results.paper === 1 && results.scissors === 1) {
+        displayWinner("It's a Tie!", []);
+      } else if (results.rock > 0 && results.scissors > 0 && results.paper === 0) {
+        winner = 'rock';
+      } else if (results.paper > 0 && results.rock > 0 && results.scissors === 0) {
+        winner = 'paper';
+      } else if (results.scissors > 0 && results.paper > 0 && results.rock === 0) {
+        winner = 'scissors';
+      } else {
+        displayWinner("It's a Tie!", []);
+        resetRound();
+        return;
+      }
+      
+      if (winner) {
+        let winningPlayers = Object.keys(choices).filter(p => choices[p] === winner);
+        winningPlayers.forEach(player => {
+          scores[player]++;
+          document.getElementById(`score${player}`).innerText = scores[player];
+        });
+        
+        // Extract current background images for each winning player
+        let winnerImages = winningPlayers.map(player => {
+          let imgSrc = document.querySelector(`#player${player} .photo`).style.backgroundImage;
+          imgSrc = imgSrc.replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
+          return `<img src="${imgSrc}" width="200" height="200" style="border: 2px solid #333; margin: 5px;">`;
+        });
+        
+        let alertMessage = `Winner(s): Player ${winningPlayers.join(", ")}`;
+        displayWinner(alertMessage, winnerImages);
+      }
+      
+      // Allow time to view results before starting next round
+      setTimeout(resetRound, 5000);
+    }
+
+    // Display winner info and images in the winner display area
+    function displayWinner(message, images) {
+      document.getElementById('winnerText').innerText = message;
+      document.getElementById('winnerImageContainer').innerHTML = images.join(' ');
+      document.getElementById('winnerDisplay').style.display = 'block';
+    }
+
+    // Functions for photo upload
+    function triggerUpload(player) {
+      document.getElementById('upload' + player).click();
+    }
+
+    function handlePhotoUpload(event, player) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          // Update the background image of the player's photo div
+          document.querySelector(`#player${player} .photo`).style.backgroundImage = `url(${e.target.result})`;
+        }
+        reader.readAsDataURL(file);
+      }
+    }
+
+    // Start timer on initial load
+    startTimer();
+
+    // Allow name change by clicking on the player's photo
+    document.querySelectorAll(".photo").forEach((photo, index) => {
+      photo.addEventListener("click", function() {
+        let playerNumber = index + 1;
+        let currentName = document.querySelector(`#player${playerNumber} h2`).innerText;
+        let newName = prompt(`Enter new name for Player ${playerNumber}:`, currentName);
+        if (newName) {
+          document.querySelector(`#player${playerNumber} h2`).innerText = newName;
+        }
+      });
+    });
+
+    // Allow manual score increase by clicking on the score entries
+    document.querySelectorAll(".score-entry").forEach((entry, index) => {
+      entry.addEventListener("click", function() {
+        let player = index + 1;
+        scores[player]++;
+        document.getElementById(`score${player}`).innerText = scores[player];
+      });
+    });
+  </script>
+</body>
+</html>
